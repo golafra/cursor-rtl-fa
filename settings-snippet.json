@@ -1,0 +1,11 @@
+{
+  "custom-ui-style.stylesheet": {
+    ".markdown-root p, .markdown-root h1, .markdown-root h2, .markdown-root h3, .markdown-root h4, .markdown-root h5, .markdown-root h6, .markdown-root ul, .markdown-root ol, .markdown-root blockquote, .markdown-root table": {
+      "direction": "rtl",
+      "text-align": "right",
+      "font-family": "IRANSans, Tahoma, sans-serif !important",
+      "font-size": "16px !important",
+      "line-height": "1.8 !important"
+    }
+  }
+}
