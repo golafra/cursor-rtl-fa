@@ -8,8 +8,15 @@ $ExtensionId = "subframe7536.custom-ui-style"
 $settingsPath = "$env:APPDATA\Cursor\User\settings.json"
 $snippetPath = Join-Path $PSScriptRoot "settings-snippet.json"
 
-# مسیر اجرایی Cursor (ویندوز)
-function Get-CursorPath {
+# پیدا کردن دستور CLI پایدار Cursor (ترجیحاً cursor.cmd/cursor)
+function Get-CursorCliCommand {
+    $cmd = Get-Command cursor -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
+    return $null
+}
+
+# مسیر اجرایی GUI Cursor (فقط برای Start-Process)
+function Get-CursorExePath {
     $paths = @(
         "$env:LOCALAPPDATA\Programs\cursor\Cursor.exe",
         "$env:LOCALAPPDATA\Programs\Cursor\Cursor.exe"
@@ -17,28 +24,45 @@ function Get-CursorPath {
     foreach ($p in $paths) {
         if (Test-Path $p) { return $p }
     }
-    $inPath = Get-Command cursor -ErrorAction SilentlyContinue
-    if ($inPath) { return $inPath.Source }
     return $null
 }
 
+function Invoke-NativeSafe {
+    param(
+        [Parameter(Mandatory = $true)][string]$FilePath,
+        [Parameter(Mandatory = $false)][string[]]$Arguments = @()
+    )
+
+    $prev = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $output = & $FilePath @Arguments 2>&1
+        return $output
+    } finally {
+        $ErrorActionPreference = $prev
+    }
+}
+
 # بررسی نصب بودن افزونه و نصب در صورت نیاز
-$cursorExe = Get-CursorPath
-if ($cursorExe) {
-    $extList = & $cursorExe --list-extensions 2>$null
+$cursorCli = Get-CursorCliCommand
+$cursorExe = Get-CursorExePath
+if ($cursorCli) {
+    # برخی نسخه‌ها هشدار node را روی stderr می‌نویسند؛ این هشدار نباید اسکریپت را متوقف کند.
+    $extList = (Invoke-NativeSafe -FilePath $cursorCli -Arguments @("--list-extensions")) | Where-Object { $_ -notmatch "DEP0040|punycode" }
     if ($extList -notmatch [regex]::Escape($ExtensionId)) {
         Write-Host "Installing extension: Custom UI Style ($ExtensionId)..." -ForegroundColor Yellow
-        & $cursorExe --install-extension $ExtensionId 2>$null
+        $installOutput = (Invoke-NativeSafe -FilePath $cursorCli -Arguments @("--install-extension", $ExtensionId)) | Where-Object { $_ -notmatch "DEP0040|punycode" }
         if ($LASTEXITCODE -eq 0) {
             Write-Host "Extension installed." -ForegroundColor Green
         } else {
+            if ($installOutput) { Write-Host ($installOutput -join [Environment]::NewLine) -ForegroundColor DarkGray }
             Write-Host "Could not install from CLI. Install manually: Extensions (Ctrl+Shift+X) -> search 'Custom UI Style'." -ForegroundColor Yellow
         }
     } else {
         Write-Host "Extension Custom UI Style already installed." -ForegroundColor Gray
     }
 } else {
-    Write-Host "Cursor executable not found. Install extension manually: Extensions (Ctrl+Shift+X) -> 'Custom UI Style'." -ForegroundColor Yellow
+    Write-Host "Cursor CLI command not found. Install extension manually: Extensions (Ctrl+Shift+X) -> 'Custom UI Style'." -ForegroundColor Yellow
 }
 
 if (-not (Test-Path $snippetPath)) {
@@ -83,13 +107,10 @@ Set-Content -Path $settingsPath -Value $resultJson -Encoding UTF8 -NoNewline
 
 Write-Host "Done. RTL styles were added to Cursor settings." -ForegroundColor Green
 
-# ریستارت خودکار Cursor تا استایل اعمال شود
+# برای جلوگیری از خطای EPIPE، Cursor را به‌صورت اجباری نمی‌بندیم.
 if ($cursorExe) {
-    Write-Host "Restarting Cursor in 3 seconds..." -ForegroundColor Cyan
-    $safePath = $cursorExe -replace "'", "''"
-    $restartCmd = "Start-Sleep -Seconds 3; Get-Process -Name 'Cursor' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 1; Start-Process -FilePath '$safePath' -WindowStyle Normal"
-    Start-Process powershell -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", $restartCmd -WindowStyle Hidden
-    Write-Host "Cursor will close and reopen shortly. If it does not, open Cursor manually." -ForegroundColor Cyan
+    Write-Host "Style applied. For activation, run: Custom UI Style: Reload (Ctrl+Shift+P)." -ForegroundColor Cyan
+    Write-Host "If needed, close and reopen Cursor manually (do not force-kill)." -ForegroundColor Cyan
 } else {
     Write-Host "In Cursor, run: Custom UI Style: Reload (Ctrl+Shift+P)" -ForegroundColor Cyan
 }
