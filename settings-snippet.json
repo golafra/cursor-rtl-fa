@@ -1,11 +1,35 @@
 {
   "custom-ui-style.stylesheet": {
-    ".markdown-root p, .markdown-root h1, .markdown-root h2, .markdown-root h3, .markdown-root h4, .markdown-root h5, .markdown-root h6, .markdown-root ul, .markdown-root ol, .markdown-root blockquote, .markdown-root table": {
+    ".markdown-root p, .markdown-root h1, .markdown-root h2, .markdown-root h3, .markdown-root h4, .markdown-root h5, .markdown-root h6, .markdown-root ul, .markdown-root ol, .markdown-root blockquote, .markdown-root table, .markdown-root th, .markdown-root td": {
       "direction": "rtl",
       "text-align": "right",
-      "font-family": "IRANSans, Tahoma, sans-serif !important",
+      "font-family": "IRANSansX !important",
       "font-size": "16px !important",
       "line-height": "1.8 !important"
+    },
+    ".plan-editor .ProseMirror p, .plan-editor .ProseMirror h1, .plan-editor .ProseMirror h2, .plan-editor .ProseMirror h3, .plan-editor .ProseMirror h4, .plan-editor .ProseMirror h5, .plan-editor .ProseMirror h6, .plan-editor .ProseMirror ul, .plan-editor .ProseMirror ol, .plan-editor .ProseMirror li, .plan-editor .ProseMirror blockquote, .plan-editor .ProseMirror table, .plan-editor .ProseMirror th, .plan-editor .ProseMirror td": {
+      "direction": "rtl",
+      "text-align": "right",
+      "font-family": "IRANSansX !important",
+      "font-size": "16px !important",
+      "line-height": "1.8 !important"
+    },
+    ".plan-editor .ProseMirror": {
+      "direction": "rtl",
+      "text-align": "right",
+      "font-family": "IRANSansX !important"
+    },
+    ".plan-list-row__text, .plan-todos-section__phase-label, .plan-references-section__title, .plan-references-section__item .plan-list-row__text": {
+      "direction": "rtl",
+      "text-align": "right",
+      "font-family": "IRANSansX !important",
+      "font-size": "14px !important",
+      "line-height": "1.6 !important"
+    },
+    ".plan-editor pre, .plan-editor pre code, .plan-editor .ProseMirror pre, .plan-editor .ProseMirror code": {
+      "direction": "ltr",
+      "text-align": "left",
+      "font-family": "Consolas, 'Courier New', monospace !important"
     }
   }
 }
