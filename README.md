@@ -55,6 +55,8 @@
 - ویرایشگر **Plan** (`.plan-editor`): همان استایل RTL برای متن، عناوین، لیست‌ها و جدول‌ها.
 - بخش **To-dos** و **Referenced Agents** در پلن: راست‌چین با فونت IRANSans.
 - بلوک‌های کد (`pre` / `code`) در پلن: **چپ‌چین (LTR)** با فونت monospace.
+- **پیش‌نمایش فایل‌های Markdown** در Cursor: از ویرایشگر React با کلاس `.markdown-editor-react` استفاده می‌شود (نه preview کلاسیک VS Code). استایل از طریق `custom-ui-style` اعمال می‌شود.
+- برای preview کلاسیک VS Code (در صورت استفاده): `markdown-preview.css` در workspace با `.vscode/settings.json`.
 
 ---
 

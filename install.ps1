@@ -1,21 +1,24 @@
 # Cursor RTL FA - Add styles to Cursor settings
 # Run: Right-click -> Run with PowerShell, or: powershell -ExecutionPolicy Bypass -File install.ps1
 # - نصب خودکار افزونه Custom UI Style در صورت نبود
-# - ریستارت خودکار Cursor پس از اعمال تنظیمات
+# - تنظیم preview مارک‌داون در workspace فعلی
+
+param(
+    [string]$WorkspacePath = $PSScriptRoot
+)
 
 $ErrorActionPreference = "Stop"
 $ExtensionId = "subframe7536.custom-ui-style"
 $settingsPath = "$env:APPDATA\Cursor\User\settings.json"
 $snippetPath = Join-Path $PSScriptRoot "settings-snippet.json"
+$previewCssSource = Join-Path $PSScriptRoot "markdown-preview.css"
 
-# پیدا کردن دستور CLI پایدار Cursor (ترجیحاً cursor.cmd/cursor)
 function Get-CursorCliCommand {
     $cmd = Get-Command cursor -ErrorAction SilentlyContinue
     if ($cmd) { return $cmd.Source }
     return $null
 }
 
-# مسیر اجرایی GUI Cursor (فقط برای Start-Process)
 function Get-CursorExePath {
     $paths = @(
         "$env:LOCALAPPDATA\Programs\cursor\Cursor.exe",
@@ -43,11 +46,51 @@ function Invoke-NativeSafe {
     }
 }
 
-# بررسی نصب بودن افزونه و نصب در صورت نیاز
+function Set-WorkspaceMarkdownPreview {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkspaceRoot,
+        [Parameter(Mandatory = $true)][string]$CssSource
+    )
+
+    $workspaceRoot = (Resolve-Path $WorkspaceRoot).Path
+    $cssDest = Join-Path $workspaceRoot "markdown-preview.css"
+    $sourcePath = (Resolve-Path $CssSource).Path
+    $destPath = if (Test-Path $cssDest) { (Resolve-Path $cssDest).Path } else { $cssDest }
+    if ($sourcePath -ne $destPath) {
+        Copy-Item -Path $CssSource -Destination $cssDest -Force
+    }
+
+    $vscodeDir = Join-Path $workspaceRoot ".vscode"
+    if (-not (Test-Path $vscodeDir)) {
+        New-Item -ItemType Directory -Path $vscodeDir -Force | Out-Null
+    }
+
+    $workspaceSettingsPath = Join-Path $vscodeDir "settings.json"
+    $workspaceSettings = [ordered]@{}
+    if (Test-Path $workspaceSettingsPath) {
+        try {
+            $existing = Get-Content $workspaceSettingsPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $existing.PSObject.Properties | ForEach-Object {
+                $workspaceSettings[$_.Name] = $_.Value
+            }
+        } catch {
+            Write-Host "Warning: Could not parse existing workspace settings. Recreating: $workspaceSettingsPath" -ForegroundColor Yellow
+        }
+    }
+
+    $workspaceSettings["markdown.styles"] = @("markdown-preview.css")
+    $workspaceSettings["markdown.preview.fontFamily"] = "IRANSansX, IRANSans, Tahoma, sans-serif"
+
+    ($workspaceSettings | ConvertTo-Json -Depth 10) + [Environment]::NewLine |
+        Set-Content -Path $workspaceSettingsPath -Encoding UTF8
+
+    Write-Host "Workspace preview settings: $workspaceSettingsPath" -ForegroundColor Gray
+    Write-Host "Workspace preview CSS: $cssDest" -ForegroundColor Gray
+}
+
 $cursorCli = Get-CursorCliCommand
 $cursorExe = Get-CursorExePath
 if ($cursorCli) {
-    # برخی نسخه‌ها هشدار node را روی stderr می‌نویسند؛ این هشدار نباید اسکریپت را متوقف کند.
     $extList = (Invoke-NativeSafe -FilePath $cursorCli -Arguments @("--list-extensions")) | Where-Object { $_ -notmatch "DEP0040|punycode" }
     if ($extList -notmatch [regex]::Escape($ExtensionId)) {
         Write-Host "Installing extension: Custom UI Style ($ExtensionId)..." -ForegroundColor Yellow
@@ -70,6 +113,11 @@ if (-not (Test-Path $snippetPath)) {
     exit 1
 }
 
+if (-not (Test-Path $previewCssSource)) {
+    Write-Host "Error: markdown-preview.css not found next to this script." -ForegroundColor Red
+    exit 1
+}
+
 $snippetJson = Get-Content $snippetPath -Raw -Encoding UTF8
 $snippet = $snippetJson | ConvertFrom-Json
 
@@ -79,12 +127,10 @@ if (-not (Test-Path $dir)) {
     exit 1
 }
 
-# Create empty settings if missing
 if (-not (Test-Path $settingsPath)) {
     Set-Content -Path $settingsPath -Value "{}" -Encoding UTF8
 }
 
-# Backup
 $backupPath = "$settingsPath.backup." + (Get-Date -Format "yyyyMMdd-HHmmss")
 Copy-Item -Path $settingsPath -Destination $backupPath -Force
 Write-Host "Backup: $backupPath" -ForegroundColor Gray
@@ -97,20 +143,27 @@ try {
     exit 1
 }
 
-# Merge: add or overwrite keys from snippet
 $snippet.PSObject.Properties | ForEach-Object {
     $current | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
+}
+
+# Cursor/VS Code فقط CSS داخل workspace را برای preview می‌پذیرد؛ مسیر file:// در user settings کار نمی‌کند.
+if ($current.PSObject.Properties.Name -contains "markdown.styles") {
+    $current.PSObject.Properties.Remove("markdown.styles")
 }
 
 $resultJson = $current | ConvertTo-Json -Depth 15
 Set-Content -Path $settingsPath -Value $resultJson -Encoding UTF8 -NoNewline
 
-Write-Host "Done. RTL styles were added to Cursor settings." -ForegroundColor Green
+Set-WorkspaceMarkdownPreview -WorkspaceRoot $WorkspacePath -CssSource $previewCssSource
 
-# برای جلوگیری از خطای EPIPE، Cursor را به‌صورت اجباری نمی‌بندیم.
+Write-Host "Done. RTL styles were added to Cursor settings." -ForegroundColor Green
+Write-Host "Markdown preview is configured in workspace: $WorkspacePath" -ForegroundColor Cyan
+Write-Host "Reload preview: close and reopen Markdown Preview (Ctrl+Shift+V)." -ForegroundColor Cyan
+Write-Host "For other projects run: .\install.ps1 -WorkspacePath 'D:\path\to\project'" -ForegroundColor Cyan
+
 if ($cursorExe) {
-    Write-Host "Style applied. For activation, run: Custom UI Style: Reload (Ctrl+Shift+P)." -ForegroundColor Cyan
-    Write-Host "If needed, close and reopen Cursor manually (do not force-kill)." -ForegroundColor Cyan
+    Write-Host "Also run: Custom UI Style: Reload (Ctrl+Shift+P)." -ForegroundColor Cyan
 } else {
     Write-Host "In Cursor, run: Custom UI Style: Reload (Ctrl+Shift+P)" -ForegroundColor Cyan
 }
