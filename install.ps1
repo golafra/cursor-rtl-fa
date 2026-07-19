@@ -1,17 +1,11 @@
 # Cursor RTL FA - Add styles to Cursor settings
 # Run: Right-click -> Run with PowerShell, or: powershell -ExecutionPolicy Bypass -File install.ps1
 # - نصب خودکار افزونه Custom UI Style در صورت نبود
-# - تنظیم preview مارک‌داون در workspace فعلی
-
-param(
-    [string]$WorkspacePath = $PSScriptRoot
-)
 
 $ErrorActionPreference = "Stop"
 $ExtensionId = "subframe7536.custom-ui-style"
 $settingsPath = "$env:APPDATA\Cursor\User\settings.json"
 $snippetPath = Join-Path $PSScriptRoot "settings-snippet.json"
-$previewCssSource = Join-Path $PSScriptRoot "markdown-preview.css"
 
 function Get-CursorCliCommand {
     $cmd = Get-Command cursor -ErrorAction SilentlyContinue
@@ -46,48 +40,6 @@ function Invoke-NativeSafe {
     }
 }
 
-function Set-WorkspaceMarkdownPreview {
-    param(
-        [Parameter(Mandatory = $true)][string]$WorkspaceRoot,
-        [Parameter(Mandatory = $true)][string]$CssSource
-    )
-
-    $workspaceRoot = (Resolve-Path $WorkspaceRoot).Path
-    $cssDest = Join-Path $workspaceRoot "markdown-preview.css"
-    $sourcePath = (Resolve-Path $CssSource).Path
-    $destPath = if (Test-Path $cssDest) { (Resolve-Path $cssDest).Path } else { $cssDest }
-    if ($sourcePath -ne $destPath) {
-        Copy-Item -Path $CssSource -Destination $cssDest -Force
-    }
-
-    $vscodeDir = Join-Path $workspaceRoot ".vscode"
-    if (-not (Test-Path $vscodeDir)) {
-        New-Item -ItemType Directory -Path $vscodeDir -Force | Out-Null
-    }
-
-    $workspaceSettingsPath = Join-Path $vscodeDir "settings.json"
-    $workspaceSettings = [ordered]@{}
-    if (Test-Path $workspaceSettingsPath) {
-        try {
-            $existing = Get-Content $workspaceSettingsPath -Raw -Encoding UTF8 | ConvertFrom-Json
-            $existing.PSObject.Properties | ForEach-Object {
-                $workspaceSettings[$_.Name] = $_.Value
-            }
-        } catch {
-            Write-Host "Warning: Could not parse existing workspace settings. Recreating: $workspaceSettingsPath" -ForegroundColor Yellow
-        }
-    }
-
-    $workspaceSettings["markdown.styles"] = @("markdown-preview.css")
-    $workspaceSettings["markdown.preview.fontFamily"] = "IRANSansX, IRANSans, Tahoma, sans-serif"
-
-    ($workspaceSettings | ConvertTo-Json -Depth 10) + [Environment]::NewLine |
-        Set-Content -Path $workspaceSettingsPath -Encoding UTF8
-
-    Write-Host "Workspace preview settings: $workspaceSettingsPath" -ForegroundColor Gray
-    Write-Host "Workspace preview CSS: $cssDest" -ForegroundColor Gray
-}
-
 $cursorCli = Get-CursorCliCommand
 $cursorExe = Get-CursorExePath
 if ($cursorCli) {
@@ -110,11 +62,6 @@ if ($cursorCli) {
 
 if (-not (Test-Path $snippetPath)) {
     Write-Host "Error: settings-snippet.json not found next to this script." -ForegroundColor Red
-    exit 1
-}
-
-if (-not (Test-Path $previewCssSource)) {
-    Write-Host "Error: markdown-preview.css not found next to this script." -ForegroundColor Red
     exit 1
 }
 
@@ -147,23 +94,12 @@ $snippet.PSObject.Properties | ForEach-Object {
     $current | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
 }
 
-# Cursor/VS Code فقط CSS داخل workspace را برای preview می‌پذیرد؛ مسیر file:// در user settings کار نمی‌کند.
-if ($current.PSObject.Properties.Name -contains "markdown.styles") {
-    $current.PSObject.Properties.Remove("markdown.styles")
-}
-
 $resultJson = $current | ConvertTo-Json -Depth 15
 Set-Content -Path $settingsPath -Value $resultJson -Encoding UTF8 -NoNewline
 
-Set-WorkspaceMarkdownPreview -WorkspaceRoot $WorkspacePath -CssSource $previewCssSource
-
 Write-Host "Done. RTL styles were added to Cursor settings." -ForegroundColor Green
-Write-Host "Markdown preview is configured in workspace: $WorkspacePath" -ForegroundColor Cyan
-Write-Host "Reload preview: close and reopen Markdown Preview (Ctrl+Shift+V)." -ForegroundColor Cyan
-Write-Host "For other projects run: .\install.ps1 -WorkspacePath 'D:\path\to\project'" -ForegroundColor Cyan
+Write-Host "Run: Custom UI Style: Reload (Ctrl+Shift+P)." -ForegroundColor Cyan
 
-if ($cursorExe) {
-    Write-Host "Also run: Custom UI Style: Reload (Ctrl+Shift+P)." -ForegroundColor Cyan
-} else {
-    Write-Host "In Cursor, run: Custom UI Style: Reload (Ctrl+Shift+P)" -ForegroundColor Cyan
+if (-not $cursorExe) {
+    Write-Host "Cursor executable not found. Open Cursor manually if needed." -ForegroundColor Yellow
 }
