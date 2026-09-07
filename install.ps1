@@ -100,6 +100,20 @@ Set-Content -Path $settingsPath -Value $resultJson -Encoding UTF8 -NoNewline
 Write-Host "Done. RTL styles were added to Cursor settings." -ForegroundColor Green
 Write-Host "Run: Custom UI Style: Reload (Ctrl+Shift+P)." -ForegroundColor Cyan
 
+$patchGlassScript = Join-Path $PSScriptRoot "patch-glass-css.mjs"
+$nodeCmd = Get-Command node -ErrorAction SilentlyContinue
+if ((Test-Path $patchGlassScript) -and $nodeCmd) {
+    Write-Host "Patching Agents Window CSS (workbench.glass.main.css)..." -ForegroundColor Yellow
+    & $nodeCmd.Source $patchGlassScript --snippet $snippetPath
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Warning: Could not patch Agents Window CSS. Run manually: node patch-glass-css.mjs" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "Node.js not found. After install, run: node patch-glass-css.mjs" -ForegroundColor Yellow
+}
+
+Write-Host "Restart Cursor completely (File -> Exit), then reopen Agents Window." -ForegroundColor Cyan
+
 if (-not $cursorExe) {
     Write-Host "Cursor executable not found. Open Cursor manually if needed." -ForegroundColor Yellow
 }

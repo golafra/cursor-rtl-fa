@@ -56,6 +56,27 @@
 - بخش **To-dos** و **Referenced Agents** در پلن: راست‌چین با فونت IRANSans.
 - بلوک‌های کد (`pre` / `code`) در پلن و پیش‌نمایش Markdown: **چپ‌چین (LTR)** با فونت monospace.
 - **پیش‌نمایش فایل‌های Markdown** (`.markdown-editor-react`): راست‌چین با فونت IRANSans.
+- **پنجره Agents Window** (Glass / `agent-sessions-workbench`): پاسخ‌های AI، پیام‌های کاربر، و باکس ورودی راست‌چین؛ بلوک‌های کد و منوها چپ‌چین.
+
+---
+
+## Agents Window (پنجره Agent)
+
+پنجره **Agents Window** (`Ctrl+Shift+P` → **Open Agents Window**) در Cursor از فایل CSS جداگانه‌ای استفاده می‌کند (`workbench.glass.main.css`)، نه همان چت کناری ادیتور.
+
+| کلید / فایل | کجا اعمال می‌شود |
+|-------------|------------------|
+| `custom-ui-style.stylesheet` | چت کناری ادیتور |
+| `custom-ui-style.agents.stylesheet` + `patch-glass-css.mjs` | **پنجره Agents Window** |
+
+> **نکته:** افزونه Custom UI Style در VS Code استایل Agents را روی `sessions.desktop.main.css` می‌زند، اما Cursor از `workbench.glass.main.css` استفاده می‌کند. اسکریپت `install.ps1` این فایل را هم پچ می‌کند.
+
+بعد از اعمال تنظیمات:
+1. دستور **Custom UI Style: Reload** را اجرا کن.
+2. Cursor را **کامل** ببند و دوباره باز کن (File → Exit).
+3. پنجره Agents Window را دوباره باز کن.
+
+اگر بعد از آپدیت Cursor استایل Agents Window از بین رفت، دوباره `.\install.ps1` را اجرا کن.
 
 ---
 

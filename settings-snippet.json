@@ -49,6 +49,87 @@
       "direction": "ltr",
       "text-align": "left",
       "font-family": "Consolas, 'Courier New', monospace !important"
+    },
+    ".markdown-body, .markdown-body p, .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6, .markdown-body ul, .markdown-body ol, .markdown-body li, .markdown-body blockquote, .markdown-body table, .markdown-body th, .markdown-body td": {
+      "direction": "rtl",
+      "text-align": "right",
+      "font-family": "IRANSansX !important",
+      "font-size": "16px !important",
+      "line-height": "1.8 !important"
+    },
+    ".markdown-body pre, .markdown-body pre code, .markdown-body code": {
+      "direction": "ltr",
+      "text-align": "left",
+      "font-family": "Consolas, 'Courier New', monospace !important"
+    },
+    ".agent-sessions-workbench .markdown-root, .agent-sessions-workbench .markdown-section, .agent-sessions-workbench .anysphere-markdown-container-root, .ui-conversation-viewer, .ui-turn-view, .ui-agent-tray": {
+      "direction": "rtl",
+      "text-align": "right",
+      "unicode-bidi": "isolate",
+      "font-family": "IRANSansX, IRANSans, Tahoma, sans-serif !important"
+    },
+    ".agent-sessions-workbench .markdown-root p, .agent-sessions-workbench .markdown-root h1, .agent-sessions-workbench .markdown-root h2, .agent-sessions-workbench .markdown-root h3, .agent-sessions-workbench .markdown-root h4, .agent-sessions-workbench .markdown-root h5, .agent-sessions-workbench .markdown-root h6, .agent-sessions-workbench .markdown-root ul, .agent-sessions-workbench .markdown-root ol, .agent-sessions-workbench .markdown-root li, .agent-sessions-workbench .markdown-root blockquote, .agent-sessions-workbench .markdown-root table, .agent-sessions-workbench .markdown-root th, .agent-sessions-workbench .markdown-root td, .agent-sessions-workbench .markdown-section p, .agent-sessions-workbench .markdown-section ul, .agent-sessions-workbench .markdown-section ol, .agent-sessions-workbench .markdown-section li": {
+      "direction": "rtl",
+      "text-align": "right",
+      "font-family": "IRANSansX !important",
+      "font-size": "16px !important",
+      "line-height": "1.8 !important"
+    },
+    ".ui-prompt-input, .ui-prompt-input .ProseMirror, .aislash-editor-input, .aislash-editor-input-readonly, .composer-human-message, .composer-human-message .justify-between, .composer-input div[contenteditable=\"true\"]": {
+      "direction": "rtl",
+      "text-align": "right",
+      "font-family": "IRANSansX, IRANSans, Tahoma, sans-serif !important"
+    },
+    ".agent-sessions-workbench pre, .agent-sessions-workbench code, .agent-sessions-workbench .ui-code-block, .agent-sessions-workbench .markdown-code-outer-container, .agent-sessions-workbench .cursor-code-block-content, .markdown-root pre, .markdown-root code, .markdown-root .ui-code-block, .markdown-root .markdown-code-outer-container": {
+      "direction": "ltr",
+      "text-align": "left",
+      "unicode-bidi": "plaintext",
+      "font-family": "Consolas, 'Courier New', monospace !important"
+    },
+    ".ui-model-picker__trigger, .ui-model-picker__trigger *, .ui-dropdown-menu, .ui-dropdown-menu *, .monaco-menu, .monaco-menu *": {
+      "direction": "ltr",
+      "text-align": "left"
+    }
+  },
+  "custom-ui-style.agents.stylesheet": {
+    ".agent-transcript-row-markdown, .agent-transcript-row-markdown .ui-markdown, .agent-transcript-row-markdown .markdown-root": {
+      "direction": "rtl !important",
+      "text-align": "right !important",
+      "unicode-bidi": "isolate",
+      "font-family": "IRANSansX, IRANSans, Tahoma, sans-serif !important"
+    },
+    ".agent-transcript-row-markdown .ui-markdown__paragraph, .agent-transcript-row-markdown .ui-markdown__heading, .agent-transcript-row-markdown .ui-markdown__list, .agent-transcript-row-markdown .ui-markdown__list-item, .agent-transcript-row-markdown .ui-markdown__hr, .agent-transcript-row-markdown .ui-markdown__table, .agent-transcript-row-markdown .ui-markdown__thead, .agent-transcript-row-markdown .ui-markdown__tbody, .agent-transcript-row-markdown .ui-markdown__tr, .agent-transcript-row-markdown .ui-markdown__th, .agent-transcript-row-markdown .ui-markdown__td, .agent-transcript-row-markdown .ui-markdown__table-cell-content, .agent-transcript-row-markdown .markdown-root p, .agent-transcript-row-markdown .markdown-root h1, .agent-transcript-row-markdown .markdown-root h2, .agent-transcript-row-markdown .markdown-root h3, .agent-transcript-row-markdown .markdown-root h4, .agent-transcript-row-markdown .markdown-root h5, .agent-transcript-row-markdown .markdown-root h6, .agent-transcript-row-markdown .markdown-root ul, .agent-transcript-row-markdown .markdown-root ol, .agent-transcript-row-markdown .markdown-root li, .agent-transcript-row-markdown .markdown-root blockquote, .agent-transcript-row-markdown .markdown-root table, .agent-transcript-row-markdown .markdown-root th, .agent-transcript-row-markdown .markdown-root td": {
+      "direction": "rtl !important",
+      "text-align": "right !important",
+      "font-family": "IRANSansX, IRANSans, Tahoma, sans-serif !important",
+      "font-size": "16px !important",
+      "line-height": "1.8 !important"
+    },
+    ".agent-transcript-row-markdown .ui-markdown__list, .agent-transcript-row-markdown .markdown-root ul, .agent-transcript-row-markdown .markdown-root ol": {
+      "padding-right": "20px !important",
+      "padding-left": "0 !important",
+      "direction": "rtl !important"
+    },
+    ".composer-human-message, .composer-human-message-content, .composer-human-message-container, .human-message-with-todos-wrapper, .human-message-inline-body": {
+      "direction": "rtl !important",
+      "text-align": "right !important"
+    },
+    ".composer-human-message .aislash-editor-input-readonly, .composer-human-message .ui-prompt-input-tiptap-readonly, .composer-human-message .ui-prompt-input-tiptap-readonly__content, .composer-human-message .composer-human-tiptap-readonly-editor": {
+      "direction": "rtl !important",
+      "text-align": "right !important",
+      "font-family": "IRANSansX, IRANSans, Tahoma, sans-serif !important",
+      "font-size": "16px !important",
+      "line-height": "1.8 !important"
+    },
+    ".agent-transcript-row-markdown .ui-code-block, .agent-transcript-row-markdown .composer-message-codeblock, .agent-transcript-row-markdown .ui-default-code, .agent-transcript-row-markdown .ui-default-code__line-content, .agent-transcript-row-markdown .markdown-root pre, .agent-transcript-row-markdown .markdown-root .ui-code-block, .agent-transcript-row-markdown .ui-code-block-content, .agent-transcript-row-markdown .ui-code-block-default-code": {
+      "direction": "ltr !important",
+      "text-align": "left !important",
+      "unicode-bidi": "plaintext",
+      "font-family": "Consolas, 'Courier New', monospace !important"
+    },
+    ".agent-transcript-row-markdown .ui-markdown__inline-code, .agent-transcript-row-markdown .ui-markdown__inline-path-filename": {
+      "direction": "ltr !important",
+      "unicode-bidi": "embed"
     }
   }
 }
